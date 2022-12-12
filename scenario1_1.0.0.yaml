@@ -1,0 +1,180 @@
+swagger: '2.0'
+info:
+  title: scenario1
+  x-ibm-name: scenario1
+  version: 1.0.0
+x-ibm-configuration:
+  cors:
+    enabled: true
+  gateway: datapower-api-gateway
+  type: rest
+  phase: realized
+  enforced: true
+  testable: true
+  assembly:
+    execute:
+      - operation-switch:
+          version: 2.0.0
+          title: operation-switch
+          case:
+            - operations:
+                - verb: get
+                  path: /case1
+              execute:
+                - invoke:
+                    version: 2.2.0
+                    title: invoke
+                    backend-type: detect
+                    header-control:
+                      type: blocklist
+                      values: []
+                    parameter-control:
+                      type: allowlist
+                      values: []
+                    http-version: HTTP/1.1
+                    timeout: 60
+                    verb: keep
+                    chunked-uploads: true
+                    persistent-connection: true
+                    cache-response: protocol
+                    cache-ttl: 900
+                    stop-on-error: []
+                    graphql-send-type: detect
+                    websocket-upgrade: false
+                    target-url: >-
+                      https://apic-demo-gw-gateway-cp4i.itzroks-2700025h88-c42j05-4b4a324f027aea19c5cbc0c3275c4656-0000.us-south.containers.appdomain.cloud/test-org/sandbox/scenario0/xml
+            - operations:
+                - verb: get
+                  path: /case2
+              execute:
+                - invoke:
+                    version: 2.2.0
+                    title: invoke
+                    backend-type: detect
+                    header-control:
+                      type: blocklist
+                      values: []
+                    parameter-control:
+                      type: allowlist
+                      values: []
+                    http-version: HTTP/1.1
+                    timeout: 60
+                    verb: keep
+                    chunked-uploads: true
+                    persistent-connection: true
+                    cache-response: protocol
+                    cache-ttl: 900
+                    stop-on-error: []
+                    graphql-send-type: detect
+                    websocket-upgrade: false
+                    target-url: >-
+                      https://apic-demo-gw-gateway-cp4i.itzroks-2700025h88-c42j05-4b4a324f027aea19c5cbc0c3275c4656-0000.us-south.containers.appdomain.cloud/test-org/sandbox/scenario0/json
+            - operations:
+                - verb: post
+                  path: /case3
+              execute:
+                - map:
+                    version: 2.0.0
+                    title: map
+                    inputs:
+                      input:
+                        schema:
+                          type: object
+                          properties:
+                            field1:
+                              type: string
+                              name: field1
+                            field2:
+                              type: string
+                              name: field2
+                        variable: request.body
+                        content: application/json
+                    outputs:
+                      output:
+                        schema:
+                          description: ''
+                          type: object
+                          properties:
+                            XML:
+                              type: object
+                              properties:
+                                field1:
+                                  type: string
+                                field2:
+                                  type: string
+                              xml:
+                                namespace: ''
+                          xml:
+                            namespace: ''
+                          example: |
+                            <XML>
+                            <field1>sample1</field1>
+                            <field2>sample2</field2>
+                            </XML>
+                        variable: message.body
+                        content: application/xml
+                    actions:
+                      - set: output.XML.field1
+                        from: input.field1
+                      - set: output.XML.field2
+                        from: input.field2
+                    options:
+                      mapEmulateV4EmptyJSONObject: false
+                      mapEmulateV4DefaultRequiredProps: false
+                      mapEnablePostProcessingJSON: false
+                      mapReferenceLimit: 1
+          otherwise: []
+    finally: []
+    catch: []
+  properties:
+    target-url:
+      value: http://example.com/operation-name
+      description: The URL of the target service
+      encoded: false
+  activity-log:
+    enabled: true
+    success-content: activity
+    error-content: payload
+basePath: /scenario1
+paths:
+  /case1:
+    get:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+  /case2:
+    get:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+  /case3:
+    post:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+      security:
+        - oauth2:
+            - scope1
+securityDefinitions:
+  clientID:
+    type: apiKey
+    in: header
+    name: X-IBM-Client-Id
+  oauth2:
+    type: oauth2
+    x-ibm-oauth-provider: scenario1-oauth
+    flow: accessCode
+    authorizationUrl: https://$(catalog.url)/v1/oauth2/authorize
+    tokenUrl: https://$(catalog.url)/v1/oauth2/token
+    scopes:
+      scope1: サンプル・スコープの説明 1
+security:
+  - clientID: []
+schemes:
+  - https
